@@ -1,6 +1,8 @@
 CliConnect - OpenAV
 ===================
 
+http://openavproductions.com/cliconnect
+
 CliConnect is a command-line-interface (CLI) based Connection manager.
 Its primary focus is to allow users connect items in a visible and
 logical way, even when using a terminal.
