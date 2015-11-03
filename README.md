@@ -13,11 +13,11 @@ CliConnect uses vim like key-bindings to navigate the ports listed in the
 bottom half of the screen. The top half of the screen lists connections.
 
 ```
-j     move down
-k     move up
-l     switch port list (playback/writeable ports)
-space connect / disconnect
-q     quit
+j        move down
+k        move up
+l or h   switch port list (playback/writeable ports)
+space    connect / disconnect
+q        quit
 ```
 
 Contact
