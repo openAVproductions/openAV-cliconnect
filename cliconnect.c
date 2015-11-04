@@ -60,7 +60,13 @@ void show_connections(const char* type)
     }
 }
 
-void list_ports(const char* type, int* sel)
+/**
+ * Display list of ports
+ * type       - jack type of ports to list
+ * sel        - 2 element array of selected ports
+ * active_col - which column is active (0 left, 1 right)
+ */
+void list_ports(const char* type, int* sel, int active_col)
 {
     int left  = 20;
     if( line > 18 )
@@ -69,14 +75,22 @@ void list_ports(const char* type, int* sel)
     int right = 20;
     for(int i = 0; portsOut[i] != 0; i++ ) {
         jack_port_t *p = jack_port_by_name(client, portsOut[i]);
+        int active_port = i == sel[0] && active_col == 0;
+        if(active_port)
+            attron(A_BOLD);
         mvprintw(left , 0, "   %s", portsOut[i]);
+        attroff(A_BOLD);
         mvprintw(arrow+sel[0], 0, "=>");
         left++;
     }
     left = arrow;
     for(int i = 0; ports[i] != 0; i++ ) {
         jack_port_t *p = jack_port_by_name(client, ports[i]);
+        int active_port = i == sel[1] && active_col == 1;
+        if(active_port)
+            attron(A_BOLD);
         mvprintw(left , 30, "   %s", ports[i]);
+        attroff(A_BOLD);
         mvprintw(arrow+sel[1], 30, "=>");
         left++;
     }
@@ -125,7 +139,7 @@ int main()
         line++;
         show_connections( JACK_DEFAULT_MIDI_TYPE );
         line++;
-        list_ports(JACK_DEFAULT_AUDIO_TYPE, selected);
+        list_ports(JACK_DEFAULT_AUDIO_TYPE, selected, onRight);
         refresh();
 
         char c = getch();
