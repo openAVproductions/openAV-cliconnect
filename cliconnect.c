@@ -33,6 +33,7 @@ int n_ports = 0;
 int n_out_ports = 0;
 
 int line = 0;
+int rescanPorts = 0;
 
 void show_connections(const char* type)
 {
@@ -96,6 +97,17 @@ void list_ports(const char* type, int* sel, int active_col)
     }
 }
 
+void portRegCallback(jack_port_id_t port, int reg, void *arg)
+{
+	mvprintw(0,0,"Port reg callback()\n");
+	rescanPorts = 1;
+}
+int graphOrderCallback(void *arg)
+{
+	mvprintw(0,0,"Graph ReOrder callback()\n");
+	rescanPorts = 1;
+}
+
 int main()
 {
     client = jack_client_open("CliConnect",
@@ -104,6 +116,18 @@ int main()
         printf("JACK not running - exit.\n");
         exit(0);
     }
+
+    int ret = jack_set_graph_order_callback(client, graphOrderCallback, 0);
+    if( ret )
+    {
+	    printf("error setting graph order cb\n");
+    }
+    ret = jack_set_port_registration_callback(client, portRegCallback, 0);
+    if( ret )
+    {
+	    printf("error setting port registration cb\n");
+    }
+
     ports = jack_get_ports( client, 0, 0, JackPortIsInput );
     for(n_ports = 0; ports[n_ports] != 0; n_ports++) {}
     portsOut = jack_get_ports( client, 0, 0, JackPortIsOutput );
@@ -167,8 +191,10 @@ int main()
                     selected[onRight] = n_out_ports-1;
             }
         }
-        if( c == 'l' || c == 'h' )
-            onRight = !onRight;
+        if( c == 'l' )
+            onRight = true;
+        if( c == 'h' )
+            onRight = false;
 
         if( c == ' ' ) {
             int r = jack_connect( client, portsOut[selected[0]],
@@ -179,13 +205,14 @@ int main()
             clear();
         }
 
-        if( c == 'r' ) {
+        if( c == 'r' || rescanPorts ) {
             jack_free( ports );
             jack_free( portsOut );
             ports = jack_get_ports( client, 0, 0, JackPortIsInput );
             portsOut = jack_get_ports( client, 0, 0, JackPortIsOutput );
             for(n_ports = 0; ports[n_ports] != 0; n_ports++) {}
             for(n_out_ports = 0; ports[n_out_ports] != 0; n_out_ports++) {}
+            clear();
         }
     }
 

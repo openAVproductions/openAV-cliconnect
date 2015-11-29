@@ -15,7 +15,9 @@ bottom half of the screen. The top half of the screen lists connections.
 ```
 j        move down
 k        move up
-l or h   switch port list (playback/writeable ports)
+h        switch to left port list
+l        switch to right port list 
+r        rescan port list
 space    connect / disconnect
 q        quit
 ```
